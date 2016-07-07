@@ -1,22 +1,33 @@
 {
-  "name": "kue-stubs",
+  "name": "kue-mock",
   "version": "0.0.0",
-  "description": "Kue job/process stub helpers for testing purposes",
-  "repository": "kerimdzhanov/kue-stubs",
-  "homepage": "https://github.com/kerimdzhanov/kue-stubs",
+  "description": "Kue job/process stub/mock helpers for testing purposes",
+  "repository": "kerimdzhanov/kue-mock",
+  "homepage": "https://github.com/kerimdzhanov/kue-mock",
   "bugs": {
-    "url": "https://github.com/kerimdzhanov/kue-stubs/issues"
+    "url": "https://github.com/kerimdzhanov/kue-mock/issues"
   },
   "keywords": [
     "kue",
     "test",
     "mock",
-    "stub"
+    "stub",
+    "sinon"
   ],
   "peerDependencies": {
     "kue": ">=0.10"
   },
-  "main": "lib/kue-stubs.js",
+  "dependencies": {
+    "q": "^1.4.1",
+    "sinon": "^1.17.4"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "kue": "^0.11.1",
+    "mocha": "^2.5.3",
+    "sinon-chai": "^2.8.0"
+  },
+  "main": "lib/kue-mock.js",
   "scripts": {
     "test": "make test"
   },
