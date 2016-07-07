@@ -1,5 +1,7 @@
 # Kue Mock
 
+[![Build Status](https://travis-ci.org/kerimdzhanov/kue-mock.svg?branch=master)](https://travis-ci.org/kerimdzhanov/kue-mock)
+
 A small stubbing/mocking library for testing code that deals with [kue](https://github.com/Automattic/kue).
 
 The library doesn't hack on any kue's internals (replacing/overriding methods etc.).
