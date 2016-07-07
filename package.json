@@ -1,6 +1,6 @@
 {
   "name": "kue-mock",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Kue job/process stub/mock helpers for testing purposes",
   "repository": "kerimdzhanov/kue-mock",
   "homepage": "https://github.com/kerimdzhanov/kue-mock",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "istanbul": "^0.4.4",
     "kue": "^0.11.1",
     "mocha": "^2.5.3",
     "sinon-chai": "^2.8.0"
