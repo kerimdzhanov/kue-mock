@@ -39,7 +39,7 @@ describe('functionality that deals with kue', () => {
 
 ### `KueMock`
 
-#### `new KueMock((kue [, options]))` (constructor)
+##### `new KueMock(kue [, options])` (constructor)
 
 Creates a kue's JobQueue instance internally specifying a custom jobs namespace for environmental isolation.
 
@@ -48,7 +48,7 @@ so you're required to create a `KueMock` instance before including any code that
 
 You can also pass your custom redis options as a second argument if you need.
 
-#### `#clean()`
+##### `#clean()`
 
 Cleanup all the enqueued/completed/failed/stuck jobs.
 It's highly recommended to call this function inside the `beforeEach` block to make your test cases isolated from each other.
@@ -64,15 +64,15 @@ beforeEach(function (done) {
 beforeEach(() => $queue.clean()); // returning a `Promise`
 ```
 
-#### `#stub(type [, impl])`
+##### `#stub(type [, impl])`
 
 Stubs a job process returning a `JobStub` object for controlling it.
 
-##### @return `JobStub`
+###### @return `JobStub`
 
 ### `JobStub`
 
-#### `#process`
+##### `#process`
 
 This is actually a `sinon.stub()` that is set up as a default implementation of the job process.
 It allows you to get all benefits sinon.js' stubbing/mocking features in setting up the job behaviour.
@@ -97,14 +97,14 @@ $job.process = function (job, done) {
 };
 ```
 
-#### @return `sinon.stub()`
+###### @return `sinon.stub()`
 
 
 ### TODO: $job.process setup sugar
-#### `JobStub#completes()`
-#### `JobStub#completesWith(result)`
-#### `JobStub#fails()`
-#### `JobStub#failsWith(reason)`
+##### `JobStub#completes()`
+##### `JobStub#completesWith(result)`
+##### `JobStub#fails()`
+##### `JobStub#failsWith(reason)`
 
 
 ## Examples
@@ -170,6 +170,7 @@ describe('functionality that deals with kue', () => {
     // ...
   });
 });
+```
 
 
 ## Contributing
