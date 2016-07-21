@@ -1,15 +1,15 @@
 'use strict';
 
-const sinon = require('sinon');
-const chai = require('chai');
+var sinon = require('sinon');
+var chai = require('chai');
 chai.use(require('sinon-chai'));
-const expect = chai.expect;
+var expect = chai.expect;
 
-const Q = require('q');
+var Q = require('q');
 
-const kue = require('kue'),
-      KueMock = require('../lib/kue-mock'),
-      $queue = new KueMock(kue);
+var kue = require('kue'),
+    KueMock = require('../lib/kue-mock'),
+    $queue = new KueMock(kue);
 
 describe('KueMock', function () {
   var queue; // the original queue instance
