@@ -15,7 +15,7 @@
     "sinon"
   ],
   "peerDependencies": {
-    "kue": ">=0.10"
+    "kue": ">=0.8"
   },
   "dependencies": {
     "q": "^1.4.1",
