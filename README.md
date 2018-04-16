@@ -23,14 +23,18 @@ const KueMock = require('kue-mock');
 const $queue = new KueMock(kue);
 
 describe('functionality that deals with kue', () => {
-  let $job;
+  let $stub;
 
   beforeEach(() => {
     return $queue.clean(); // for test case isolation
   });
 
   beforeEach(() => {
-    $job = $queue.stub('job type');
+    $stub = $queue.stub('job type');
+  });
+
+  afterEach(() => {
+    $stub.restore(); // for test case isolation
   });
 
   // your tests goes here (see examples below)
@@ -83,17 +87,22 @@ Or you can even replace it with your own implementation on the fly.
 Here are a few usage examples:
 
 ```js
-let $job = $queue.stub('job type');
+let $stub = $queue.stub('job type');
 
-$job.yields(null, { foo: 'bar' }); // completes the job with results
-$job.yields(new Error('Oops!')); // fails the job providing a reason
+$stub.yields(null, { foo: 'bar' }); // completes the job with results
+$stub.yields(new Error('Oops!')); // fails the job providing a reason
 
 // assertions and expectations
-$job.process.should.be.called(); // using `should-sinon`
-expect($job).to.have.been.called; // using `sinon-chai`
+$stub.process.should.be.called(); // using `should-sinon`
+expect($stub).to.have.been.called; // using `sinon-chai`
 
-// or simple replace
-$job.process = function (job, done) {
+// you can also provide your custom process implementation
+let $stub = $queue.stub('job type', (job, done) => {
+  done(null, { foo: 'bar' });
+});
+
+// or simply replace the #process property
+$stub.process = function (job, done) {
   // your own process handling...
   done(null, { foo: 'bar' });
 };
@@ -101,8 +110,12 @@ $job.process = function (job, done) {
 
 ###### @return `sinon.stub()`
 
+##### `#restore`
 
-### TODO: $job.process setup sugar
+Unregister the job process stub.
+Make sure that you've called this after your stubbing test cases to isolate them from each other.
+
+### TODO: $stub.process setup sugar
 ##### `JobStub#completes()`
 ##### `JobStub#completesWith(result)`
 ##### `JobStub#fails()`
@@ -112,13 +125,13 @@ $job.process = function (job, done) {
 ## Examples
 
 ```js
-const expect = require('chai').expect;
+const {expect} = require('chai');
 
 const kue = require('kue');
 const KueMock = require('kue-mock');
 const $queue = new KueMock(kue);
 
-const app = require('./your-app-file');
+const {yourJobRunnerFunction} = require('./your-lib-file');
 
 describe('functionality that deals with kue', () => {
   before(() => $queue.clean());
@@ -127,7 +140,7 @@ describe('functionality that deals with kue', () => {
   it('enqueues a job providing some correct data', () => {
     let jobData;
 
-    $queue.stub('your job type', (job, done) => {
+    const $stub = $queue.stub('your job type', (job, done) => {
       jobData = job.data;
       done();
     });
@@ -136,14 +149,21 @@ describe('functionality that deals with kue', () => {
       .then(() => {
         expect(jobData).to.be.an('object')
           .that.is.eql({ foo: 'bar' });
+      })
+      .finally(() => {
+         $stub.restore(); // unregister the job stub to isolate test cases
       });
   });
 
   describe('when the job is completed', () => {
-    beforeEach(() => {
-      $queue.stub('your job type')
+    let $stub;
+
+    beforeEach('stub job process result', () => {
+      $stub = $queue.stub('your job type')
         .yields(null, { baz: 'qux' });
     });
+
+    afterEach(() => $stub.restore());
 
     it('correctly handles the result', () => {
       return yourJobRunnerFunction()
@@ -156,10 +176,14 @@ describe('functionality that deals with kue', () => {
   });
 
   describe('when the job is failed', () => {
-    beforeEach(() => {
-      $queue.stub('your job type')
+    let $stub;
+
+    beforeEach('stub job process failure', () => {
+      $stub = $queue.stub('your job type')
         .yields(new Error('Oops!'));
     });
+
+    afterEach(() => $stub.restore());
 
     it('correctly handles the job result', () => {
       return yourJobRunnerFunction()

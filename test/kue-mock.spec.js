@@ -19,84 +19,101 @@ describe('KueMock', function () {
   });
 
   describe('#stub', function () {
-    it('generates a `JobStub` object', function () {
-      expect($queue.stub('test job'))
+    it('creates a new `JobProcessStub` object', function () {
+      var $stub = $queue.stub('test job');
+
+      expect($stub)
         .to.be.an('object')
         .with.property('process')
         .that.is.a('function')
         .and.is.not.called;
+
+      expect($stub)
+        .to.have.property('restore')
+        .that.is.a('function');
     });
 
-    it('generates a new object on each call', function () {
-      expect($queue.stub('test job'))
-        .to.not.equal($queue.stub('test job'));
-    });
-  });
+    describe('=> JobProcessStub', function () {
+      var $stub;
 
-  describe('#stub => JobStub', function () {
-    var jobStub;
+      describe('when a stubbed type job is enqueued', function () {
+        beforeEach('stub job process', function () {
+          $stub = $queue.stub('job process stub');
+        });
 
-    describe('when a stubbed type job is queued', function () {
-      beforeEach('stub job process', function () {
-        jobStub = $queue.stub('job process stub');
+        it('calls through the process stub', function (done) {
+          queue.create('job process stub')
+            .on('complete', function () {
+              expect($stub.process).to.have.been.called;
+              done();
+            })
+            .on('failed', function (err) { done(err) })
+            .save(function (err) { err && done(err) });
+        });
       });
 
-      it('calls through the process stub', function (done) {
-        queue.create('job process stub')
-          .on('complete', function () {
-            expect(jobStub.process).to.have.been.called;
+      describe('when a custom implementation is given', function () {
+        var probe;
+
+        beforeEach('setup the probe', function () {
+          probe = sinon.stub().yields();
+        });
+
+        beforeEach('stub job process', function () {
+          $stub = $queue.stub('job process stub', probe);
+        });
+
+        it('calls through the given function', function (done) {
+          queue.create('job process stub')
+            .on('complete', function () {
+              expect(probe).to.have.been.called;
+              done();
+            })
+            .on('failed', function (err) { done(err) })
+            .save(function (err) { err && done(err) });
+        });
+      });
+
+      describe('when the `#process` property is replaced', function () {
+        var probe;
+
+        beforeEach('setup probe stub', function () {
+          probe = sinon.stub().yields();
+        });
+
+        beforeEach('stub job process', function () {
+          $stub = $queue.stub('job process stub');
+        });
+
+        beforeEach('reassign `job.process`', function () {
+          $stub.process = probe;
+        });
+
+        it('calls through the replaced function', function (done) {
+          queue.create('job process stub')
+            .on('complete', function () {
+              expect(probe).to.have.been.called;
+              done();
+            })
+            .on('failed', function (err) { done(err) })
+            .save(function (err) { err && done(err) });
+        });
+      });
+
+      describe('#restore', function () {
+        it('unregisters the job', function (done) {
+          $stub = $queue.stub('job process stub');
+
+          $stub.restore();
+
+          queue.create('job process stub')
+            .save(function (err) { err && done(err) });
+
+          setTimeout(function () {
+            expect($stub.process).to.have.not.been.called;
             done();
-          })
-          .on('failed', function (err) { done(err) })
-          .save(function (err) { err && done(err) });
-      });
-    });
-
-    describe('when a custom implementation is given', function () {
-      var probe;
-
-      beforeEach('setup the probe', function () {
-        probe = sinon.stub().yields();
-      });
-
-      beforeEach('stub job process', function () {
-        jobStub = $queue.stub('job process stub', probe);
-      });
-
-      it('calls through the given function', function (done) {
-        queue.create('job process stub')
-          .on('complete', function () {
-            expect(probe).to.have.been.called;
-            done();
-          })
-          .on('failed', function (err) { done(err) })
-          .save(function (err) { err && done(err) });
-      });
-    });
-
-    describe('when `#process` is replaced', function () {
-      var probe;
-
-      beforeEach('setup probe stub', function () {
-        probe = sinon.stub().yields();
-      });
-
-      beforeEach('stub job process', function () {
-        jobStub = $queue.stub('job process stub');
-      });
-
-      beforeEach('reassign `job.process`', function () {
-        jobStub.process = probe;
-      });
-
-      it('calls through the replaced function', function (done) {
-        queue.create('job process stub')
-          .on('complete', function () {
-            expect(probe).to.have.been.called;
-            done();
-          })
-          .on('failed', function (err) { done(err) })
-          .save(function (err) { err && done(err) });
+          }, 100);
+        });
       });
     });
   });
