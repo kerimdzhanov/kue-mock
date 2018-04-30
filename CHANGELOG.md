@@ -1,3 +1,11 @@
+<a name="0.3.0"></a>
+# 0.3.0 (2018-04-30)
+
+* feat(job-process-stub): implement `JobProcessStub#restore` ([1e02ee9](https://github.com/kerimdzhanov/kue-mock/commit/1e02ee9))
+* refactor(kue-mock): internal refactoring ([0feae3e](https://github.com/kerimdzhanov/kue-mock/commit/0feae3e))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/kerimdzhanov/kue-mock/compare/v0.1.0...v0.2.0) (2016-09-07)
 
